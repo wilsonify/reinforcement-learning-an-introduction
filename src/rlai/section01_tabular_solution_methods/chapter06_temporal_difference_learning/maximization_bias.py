@@ -11,7 +11,7 @@ import matplotlib
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import copy
@@ -59,13 +59,21 @@ def choose_action(state, q_value):
         return np.random.choice(STATE_ACTIONS[state])
     else:
         values_ = q_value[state]
-        return np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
+        return np.random.choice(
+            [
+                action_
+                for action_, value_ in enumerate(values_)
+                if value_ == np.max(values_)
+            ]
+        )
+
 
 # take @action in @state, return the reward
 def take_action(state, action):
     if state == STATE_A:
         return 0
     return np.random.normal(-0.1, 1)
+
 
 # if there are two state action pair value array, use double Q-Learning
 # otherwise use normal Q-Learning
@@ -78,7 +86,9 @@ def q_learning(q1, q2=None):
             action = choose_action(state, q1)
         else:
             # derive a action form Q1 and Q2
-            action = choose_action(state, [item1 + item2 for item1, item2 in zip(q1, q2)])
+            action = choose_action(
+                state, [item1 + item2 for item1, item2 in zip(q1, q2)]
+            )
         if state == STATE_A and action == ACTION_A_LEFT:
             left_count += 1
         reward = take_action(state, action)
@@ -93,17 +103,25 @@ def q_learning(q1, q2=None):
             else:
                 active_q = q2
                 target_q = q1
-            best_action = np.random.choice([action_ for action_, value_ in enumerate(active_q[next_state]) if value_ == np.max(active_q[next_state])])
+            best_action = np.random.choice(
+                [
+                    action_
+                    for action_, value_ in enumerate(active_q[next_state])
+                    if value_ == np.max(active_q[next_state])
+                ]
+            )
             target = target_q[next_state][best_action]
 
         # Q-Learning update
         active_q[state][action] += ALPHA * (
-            reward + GAMMA * target - active_q[state][action])
+            reward + GAMMA * target - active_q[state][action]
+        )
         state = next_state
     return left_count
 
+
 # Figure 6.7, 1,000 runs may be enough, # of actions in state B will also affect the curves
-def figure_6_7(episodes = 300, runs = 1000):
+def figure_6_7(episodes=300, runs=1000):
     # each independent run has 300 episodes
 
     left_counts_q = np.zeros((runs, episodes))
@@ -118,15 +136,16 @@ def figure_6_7(episodes = 300, runs = 1000):
     left_counts_q = left_counts_q.mean(axis=0)
     left_counts_double_q = left_counts_double_q.mean(axis=0)
 
-    plt.plot(left_counts_q, label='Q-Learning')
-    plt.plot(left_counts_double_q, label='Double Q-Learning')
-    plt.plot(np.ones(episodes) * 0.05, label='Optimal')
-    plt.xlabel('episodes')
-    plt.ylabel('% left actions from A')
+    plt.plot(left_counts_q, label="Q-Learning")
+    plt.plot(left_counts_double_q, label="Double Q-Learning")
+    plt.plot(np.ones(episodes) * 0.05, label="Optimal")
+    plt.xlabel("episodes")
+    plt.ylabel("% left actions from A")
     plt.legend()
 
-    plt.savefig(f'{path_to_images}/figure_6_7.png')
+    plt.savefig(f"{path_to_images}/figure_6_7.png")
     plt.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     figure_6_7()

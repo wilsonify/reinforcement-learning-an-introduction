@@ -11,7 +11,7 @@ import numpy as np
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -57,7 +57,8 @@ def step(state, action):
 
     reward = -1
     if (action == ACTION_DOWN and i == 2 and 1 <= j <= 10) or (
-            action == ACTION_RIGHT and state == START):
+        action == ACTION_RIGHT and state == START
+    ):
         reward = -100
         next_state = START
 
@@ -92,7 +93,13 @@ def choose_action(state, q_value):
         return np.random.choice(ACTIONS)
     else:
         values_ = q_value[state[0], state[1], :]
-        return np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
+        return np.random.choice(
+            [
+                action_
+                for action_, value_ in enumerate(values_)
+                if value_ == np.max(values_)
+            ]
+        )
 
 
 # an episode with Sarsa
@@ -117,13 +124,19 @@ def sarsa(q_value, expected=False, step_size=ALPHA):
             best_actions = np.argwhere(q_next == np.max(q_next))
             for action_ in ACTIONS:
                 if action_ in best_actions:
-                    target += ((1.0 - EPSILON) / len(best_actions) + EPSILON / len(ACTIONS)) * q_value[
-                        next_state[0], next_state[1], action_]
+                    target += (
+                        (1.0 - EPSILON) / len(best_actions) + EPSILON / len(ACTIONS)
+                    ) * q_value[next_state[0], next_state[1], action_]
                 else:
-                    target += EPSILON / len(ACTIONS) * q_value[next_state[0], next_state[1], action_]
+                    target += (
+                        EPSILON
+                        / len(ACTIONS)
+                        * q_value[next_state[0], next_state[1], action_]
+                    )
         target *= GAMMA
         q_value[state[0], state[1], action] += step_size * (
-                reward + target - q_value[state[0], state[1], action])
+            reward + target - q_value[state[0], state[1], action]
+        )
         state = next_state
         action = next_action
     return rewards
@@ -142,8 +155,10 @@ def q_learning(q_value, step_size=ALPHA):
         rewards += reward
         # Q-Learning update
         q_value[state[0], state[1], action] += step_size * (
-                reward + GAMMA * np.max(q_value[next_state[0], next_state[1], :]) -
-                q_value[state[0], state[1], action])
+            reward
+            + GAMMA * np.max(q_value[next_state[0], next_state[1], :])
+            - q_value[state[0], state[1], action]
+        )
         state = next_state
     return rewards
 
@@ -155,17 +170,17 @@ def print_optimal_policy(q_value):
         optimal_policy.append([])
         for j in range(0, WORLD_WIDTH):
             if [i, j] == GOAL:
-                optimal_policy[-1].append('G')
+                optimal_policy[-1].append("G")
                 continue
             bestAction = np.argmax(q_value[i, j, :])
             if bestAction == ACTION_UP:
-                optimal_policy[-1].append('U')
+                optimal_policy[-1].append("U")
             elif bestAction == ACTION_DOWN:
-                optimal_policy[-1].append('D')
+                optimal_policy[-1].append("D")
             elif bestAction == ACTION_LEFT:
-                optimal_policy[-1].append('L')
+                optimal_policy[-1].append("L")
             elif bestAction == ACTION_RIGHT:
-                optimal_policy[-1].append('R')
+                optimal_policy[-1].append("R")
     for row in optimal_policy:
         print(row)
 
@@ -196,20 +211,20 @@ def figure_6_4(episodes=500, runs=50):
     rewards_q_learning /= runs
 
     # draw reward curves
-    plt.plot(rewards_sarsa, label='Sarsa')
-    plt.plot(rewards_q_learning, label='Q-Learning')
-    plt.xlabel('Episodes')
-    plt.ylabel('Sum of rewards during episode')
+    plt.plot(rewards_sarsa, label="Sarsa")
+    plt.plot(rewards_q_learning, label="Q-Learning")
+    plt.xlabel("Episodes")
+    plt.ylabel("Sum of rewards during episode")
     plt.ylim([-100, 0])
     plt.legend()
 
-    plt.savefig(f'{path_to_images}/figure_6_4.png')
+    plt.savefig(f"{path_to_images}/figure_6_4.png")
     plt.close()
 
     # display optimal policy
-    print('Sarsa Optimal Policy:')
+    print("Sarsa Optimal Policy:")
     print_optimal_policy(q_sarsa)
-    print('Q-Learning Optimal Policy:')
+    print("Q-Learning Optimal Policy:")
     print_optimal_policy(q_q_learning)
 
 
@@ -235,7 +250,9 @@ def figure_6_6(episodes=1000, runs=10):
             q_q_learning = np.copy(q_sarsa)
             for ep in range(episodes):
                 sarsa_reward = sarsa(q_sarsa, expected=False, step_size=step_size)
-                expected_sarsa_reward = sarsa(q_expected_sarsa, expected=True, step_size=step_size)
+                expected_sarsa_reward = sarsa(
+                    q_expected_sarsa, expected=True, step_size=step_size
+                )
                 q_learning_reward = q_learning(q_q_learning, step_size=step_size)
                 performace[ASY_SARSA, ind] += sarsa_reward
                 performace[ASY_EXPECTED_SARSA, ind] += expected_sarsa_reward
@@ -248,19 +265,25 @@ def figure_6_6(episodes=1000, runs=10):
 
     performace[:3, :] /= episodes * runs
     performace[3:, :] /= 100 * runs
-    labels = ['Asymptotic Sarsa', 'Asymptotic Expected Sarsa', 'Asymptotic Q-Learning',
-              'Interim Sarsa', 'Interim Expected Sarsa', 'Interim Q-Learning']
+    labels = [
+        "Asymptotic Sarsa",
+        "Asymptotic Expected Sarsa",
+        "Asymptotic Q-Learning",
+        "Interim Sarsa",
+        "Interim Expected Sarsa",
+        "Interim Q-Learning",
+    ]
 
     for method, label in zip(methods, labels):
         plt.plot(step_sizes, performace[method, :], label=label)
-    plt.xlabel('alpha')
-    plt.ylabel('reward per episode')
+    plt.xlabel("alpha")
+    plt.ylabel("reward per episode")
     plt.legend()
 
-    plt.savefig(f'{path_to_images}/figure_6_6.png')
+    plt.savefig(f"{path_to_images}/figure_6_6.png")
     plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     figure_6_4()
     figure_6_6()

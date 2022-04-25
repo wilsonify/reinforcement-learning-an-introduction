@@ -12,7 +12,7 @@ import numpy as np
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 # goal
 GOAL = 100
@@ -42,7 +42,9 @@ def figure_4_3():
             action_returns = []
             for action in actions:
                 action_returns.append(
-                    HEAD_PROB * state_value[state + action] + (1 - HEAD_PROB) * state_value[state - action])
+                    HEAD_PROB * state_value[state + action]
+                    + (1 - HEAD_PROB) * state_value[state - action]
+                )
             new_value = np.max(action_returns)
             state_value[state] = new_value
         delta = abs(state_value - old_state_value).max()
@@ -57,7 +59,9 @@ def figure_4_3():
         action_returns = []
         for action in actions:
             action_returns.append(
-                HEAD_PROB * state_value[state + action] + (1 - HEAD_PROB) * state_value[state - action])
+                HEAD_PROB * state_value[state + action]
+                + (1 - HEAD_PROB) * state_value[state - action]
+            )
 
         # round to resemble the figure in the book, see
         # https://github.com/ShangtongZhang/reinforcement-learning-an-introduction/issues/83
@@ -67,19 +71,19 @@ def figure_4_3():
 
     plt.subplot(2, 1, 1)
     for sweep, state_value in enumerate(sweeps_history):
-        plt.plot(state_value, label='sweep {}'.format(sweep))
-    plt.xlabel('Capital')
-    plt.ylabel('Value estimates')
-    plt.legend(loc='best')
+        plt.plot(state_value, label="sweep {}".format(sweep))
+    plt.xlabel("Capital")
+    plt.ylabel("Value estimates")
+    plt.legend(loc="best")
 
     plt.subplot(2, 1, 2)
     plt.scatter(STATES, policy)
-    plt.xlabel('Capital')
-    plt.ylabel('Final policy (stake)')
+    plt.xlabel("Capital")
+    plt.ylabel("Final policy (stake)")
 
-    plt.savefig(f'{path_to_images}/figure_4_3.png')
+    plt.savefig(f"{path_to_images}/figure_4_3.png")
     plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     figure_4_3()

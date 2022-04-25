@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 # 2 actions
 ACTIONS = [0, 1]
@@ -83,7 +83,8 @@ def uniform(task, eval_interval):
 
         next_states = task.transition[state, action]
         q[state, action] = (1 - TERMINATION_PROB) * np.mean(
-            task.reward[state, action] + np.max(q[next_states, :], axis=1))
+            task.reward[state, action] + np.max(q[next_states, :], axis=1)
+        )
 
         if step % eval_interval == 0:
             v_pi = evaluate_pi(q, task)
@@ -108,7 +109,8 @@ def on_policy(task, eval_interval):
 
         next_states = task.transition[state, action]
         q[state, action] = (1 - TERMINATION_PROB) * np.mean(
-            task.reward[state, action] + np.max(q[next_states, :], axis=1))
+            task.reward[state, action] + np.max(q[next_states, :], axis=1)
+        )
 
         if next_state == task.n_states:
             next_state = 0
@@ -121,22 +123,18 @@ def on_policy(task, eval_interval):
     return zip(*performance)
 
 
-def figure_8_8(num_states=(1000, 10000), n_tasks = 30,x_ticks = 100):
-
-
+def figure_8_8(num_states=(1000, 10000), n_tasks=30, x_ticks=100):
 
     branch = [1, 3, 10]
     methods = [on_policy, uniform]
 
     # average across 30 tasks
 
-
     # number of evaluation points
-
 
     plt.figure(figsize=(10, 20))
     for i, n in enumerate(num_states):
-        plt.subplot(2, 1, i+1)
+        plt.subplot(2, 1, i + 1)
         for b in branch:
             tasks = [Task(n, b) for _ in range(n_tasks)]
             for method in methods:
@@ -146,18 +144,18 @@ def figure_8_8(num_states=(1000, 10000), n_tasks = 30,x_ticks = 100):
                     steps, v = method(task, MAX_STEPS / x_ticks)
                     value.append(v)
                 value = np.mean(np.asarray(value), axis=0)
-                plt.plot(steps, value, label=f'b = {b}, {method.__name__}')
-        plt.title(f'{n} states')
+                plt.plot(steps, value, label=f"b = {b}, {method.__name__}")
+        plt.title(f"{n} states")
 
-        plt.ylabel('value of start state')
+        plt.ylabel("value of start state")
         plt.legend()
 
     plt.subplot(2, 1, 2)
-    plt.xlabel('computation time, in expected updates')
+    plt.xlabel("computation time, in expected updates")
 
-    plt.savefig(f'{path_to_images}/figure_8_8.png')
+    plt.savefig(f"{path_to_images}/figure_8_8.png")
     plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     figure_8_8()

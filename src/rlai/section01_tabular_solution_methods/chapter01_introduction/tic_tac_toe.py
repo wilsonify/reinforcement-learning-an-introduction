@@ -88,18 +88,18 @@ class State:
     # print the board
     def print_state(self):
         for i in range(BOARD_ROWS):
-            print('-------------')
-            out = '| '
+            print("-------------")
+            out = "| "
             for j in range(BOARD_COLS):
                 if self.data[i, j] == 1:
-                    token = '*'
+                    token = "*"
                 elif self.data[i, j] == -1:
-                    token = 'x'
+                    token = "x"
                 else:
-                    token = '0'
-                out += token + ' | '
+                    token = "0"
+                out += token + " | "
             print(out)
-        print('-------------')
+        print("-------------")
 
 
 def get_all_states_impl(current_state, current_symbol, all_states):
@@ -227,8 +227,7 @@ class Player:
             for j in range(BOARD_COLS):
                 if state.data[i, j] == 0:
                     next_positions.append([i, j])
-                    next_states.append(state.next_state(
-                        i, j, self.symbol).hash())
+                    next_states.append(state.next_state(i, j, self.symbol).hash())
 
         if np.random.rand() < self.epsilon:
             action = next_positions[np.random.randint(len(next_positions))]
@@ -247,11 +246,15 @@ class Player:
         return action
 
     def save_policy(self):
-        with open('policy_%s.bin' % ('first' if self.symbol == 1 else 'second'), 'wb') as f:
+        with open(
+            "policy_%s.bin" % ("first" if self.symbol == 1 else "second"), "wb"
+        ) as f:
             pickle.dump(self.estimations, f)
 
     def load_policy(self):
-        with open('policy_%s.bin' % ('first' if self.symbol == 1 else 'second'), 'rb') as f:
+        with open(
+            "policy_%s.bin" % ("first" if self.symbol == 1 else "second"), "rb"
+        ) as f:
             self.estimations = pickle.load(f)
 
 
@@ -263,7 +266,7 @@ class Player:
 class HumanPlayer:
     def __init__(self, **kwargs):
         self.symbol = None
-        self.keys = ['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c']
+        self.keys = ["q", "w", "e", "a", "s", "d", "z", "x", "c"]
         self.state = None
 
     def reset(self):
@@ -297,7 +300,10 @@ def train(epochs, print_every_n=500):
         if winner == -1:
             player2_win += 1
         if i % print_every_n == 0:
-            print('Epoch %d, player 1 winrate: %.02f, player 2 winrate: %.02f' % (i, player1_win / i, player2_win / i))
+            print(
+                "Epoch %d, player 1 winrate: %.02f, player 2 winrate: %.02f"
+                % (i, player1_win / i, player2_win / i)
+            )
         player1.backup()
         player2.backup()
         judger.reset()
@@ -320,7 +326,10 @@ def compete(turns):
         if winner == -1:
             player2_win += 1
         judger.reset()
-    print('%d turns, player 1 win %.02f, player 2 win %.02f' % (turns, player1_win / turns, player2_win / turns))
+    print(
+        "%d turns, player 1 win %.02f, player 2 win %.02f"
+        % (turns, player1_win / turns, player2_win / turns)
+    )
 
 
 # The game is a zero sum game. If both players are playing with an optimal strategy, every game will end in a tie.
@@ -340,7 +349,7 @@ def play():
             print("It is a tie!")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     train(int(1e5))
     compete(int(1e3))
     play()

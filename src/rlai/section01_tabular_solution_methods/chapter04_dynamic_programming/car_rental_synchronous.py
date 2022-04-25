@@ -49,7 +49,9 @@ def poisson(n, lam):
 
 
 class PolicyIteration:
-    def __init__(self, truncate, parallel_processes, delta=1e-2, gamma=0.9, solve_4_5=False):
+    def __init__(
+        self, truncate, parallel_processes, delta=1e-2, gamma=0.9, solve_4_5=False
+    ):
         self.TRUNCATE = truncate
         self.NR_PARALLEL_PROCESSES = parallel_processes
         self.actions = np.arange(-MAX_MOVE, MAX_MOVE + 1)
@@ -67,17 +69,21 @@ class PolicyIteration:
             start_time = time.time()
             self.values = self.policy_evaluation(self.values, self.policy)
             elapsed_time = time.time() - start_time
-            print(f'PE => Elapsed time {elapsed_time} seconds')
+            print(f"PE => Elapsed time {elapsed_time} seconds")
             start_time = time.time()
 
-            policy_change, self.policy = self.policy_improvement(self.actions, self.values, self.policy)
+            policy_change, self.policy = self.policy_improvement(
+                self.actions, self.values, self.policy
+            )
             elapsed_time = time.time() - start_time
-            print(f'PI => Elapsed time {elapsed_time} seconds')
+            print(f"PI => Elapsed time {elapsed_time} seconds")
             if policy_change == 0:
                 break
             iterations += 1
         total_elapsed_time = time.time() - total_start_time
-        print(f'Optimal policy is reached after {iterations} iterations in {total_elapsed_time} seconds')
+        print(
+            f"Optimal policy is reached after {iterations} iterations in {total_elapsed_time} seconds"
+        )
 
     # out-place
     def policy_evaluation(self, values, policy):
@@ -98,16 +104,18 @@ class PolicyIteration:
                 new_values[i, j] = v
 
             difference = np.abs(new_values - values).sum()
-            print(f'Difference: {difference}')
+            print(f"Difference: {difference}")
             values = new_values
             if difference < self.delta:
-                print(f'Values are converged!')
+                print(f"Values are converged!")
                 return values
 
     def policy_improvement(self, actions, values, policy):
         new_policy = np.copy(policy)
 
-        expected_action_returns = np.zeros((MAX_CARS + 1, MAX_CARS + 1, np.size(actions)))
+        expected_action_returns = np.zeros(
+            (MAX_CARS + 1, MAX_CARS + 1, np.size(actions))
+        )
         cooks = dict()
         with mp.Pool(processes=8) as p:
             for action in actions:
@@ -122,7 +130,7 @@ class PolicyIteration:
                 new_policy[i, j] = actions[np.argmax(expected_action_returns[i, j])]
 
         policy_change = (new_policy != policy).sum()
-        print(f'Policy changed in {policy_change} states')
+        print(f"Policy changed in {policy_change} states")
         return policy_change, new_policy
 
     # O(n^4) computation for all possible requests and returns
@@ -160,18 +168,29 @@ class PolicyIteration:
                 num_of_cars_second_loc -= real_rental_second_loc
 
                 # probability for current combination of rental requests
-                prob = poisson(req1, RENTAL_REQUEST_FIRST_LOC) * \
-                       poisson(req2, RENTAL_REQUEST_SECOND_LOC)
+                prob = poisson(req1, RENTAL_REQUEST_FIRST_LOC) * poisson(
+                    req2, RENTAL_REQUEST_SECOND_LOC
+                )
                 for ret1 in range(0, self.TRUNCATE):
                     for ret2 in range(0, self.TRUNCATE):
-                        num_of_cars_first_loc_ = min(num_of_cars_first_loc + ret1, MAX_CARS)
-                        num_of_cars_second_loc_ = min(num_of_cars_second_loc + ret2, MAX_CARS)
-                        prob_ = poisson(ret1, RETURNS_FIRST_LOC) * \
-                                poisson(ret2, RETURNS_SECOND_LOC) * prob
+                        num_of_cars_first_loc_ = min(
+                            num_of_cars_first_loc + ret1, MAX_CARS
+                        )
+                        num_of_cars_second_loc_ = min(
+                            num_of_cars_second_loc + ret2, MAX_CARS
+                        )
+                        prob_ = (
+                            poisson(ret1, RETURNS_FIRST_LOC)
+                            * poisson(ret2, RETURNS_SECOND_LOC)
+                            * prob
+                        )
                         # Classic Bellman equation for state-value
                         # prob_ corresponds to p(s'|s,a) for each possible s' -> (num_of_cars_first_loc_,num_of_cars_second_loc_)
                         expected_return += prob_ * (
-                                reward + self.gamma * values[num_of_cars_first_loc_, num_of_cars_second_loc_])
+                            reward
+                            + self.gamma
+                            * values[num_of_cars_first_loc_, num_of_cars_second_loc_]
+                        )
         return expected_return
 
     # Parallelization enforced different helper functions
@@ -185,8 +204,11 @@ class PolicyIteration:
     # Expected return calculator for Policy Improvement
     def expected_return_pi(self, values, action, state):
 
-        if ((action >= 0 and state[0] >= action) or (action < 0 and state[1] >= abs(action))) == False:
-            return -float('inf'), state[0], state[1], action
+        if (
+            (action >= 0 and state[0] >= action)
+            or (action < 0 and state[1] >= abs(action))
+        ) == False:
+            return -float("inf"), state[0], state[1], action
         expected_return = self.bellman(values, action, state)
         return expected_return, state[0], state[1], action
 
@@ -195,12 +217,14 @@ class PolicyIteration:
         plt.figure()
         plt.xlim(0, MAX_CARS + 1)
         plt.ylim(0, MAX_CARS + 1)
-        plt.table(cellText=np.flipud(self.policy), loc=(0, 0), cellLoc='center')
+        plt.table(cellText=np.flipud(self.policy), loc=(0, 0), cellLoc="center")
         plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     TRUNCATE = 9
-    solver = PolicyIteration(TRUNCATE, parallel_processes=4, delta=1e-1, gamma=0.9, solve_4_5=True)
+    solver = PolicyIteration(
+        TRUNCATE, parallel_processes=4, delta=1e-1, gamma=0.9, solve_4_5=True
+    )
     solver.solve()
     solver.plot()

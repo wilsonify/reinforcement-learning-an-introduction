@@ -11,7 +11,7 @@ import matplotlib
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 ACTION_BACK = 0
@@ -21,9 +21,11 @@ ACTION_END = 1
 def behavior_policy():
     return np.random.binomial(1, 0.5)
 
+
 # target policy
 def target_policy():
     return ACTION_BACK
+
 
 # one turn
 def play():
@@ -36,6 +38,7 @@ def play():
             return 0, trajectory
         if np.random.binomial(1, 0.9) == 0:
             return 1, trajectory
+
 
 def figure_5_4():
     runs = 10
@@ -52,12 +55,13 @@ def figure_5_4():
         rewards = np.add.accumulate(rewards)
         estimations = np.asarray(rewards) / np.arange(1, episodes + 1)
         plt.plot(estimations)
-    plt.xlabel('Episodes (log scale)')
-    plt.ylabel('Ordinary Importance Sampling')
-    plt.xscale('log')
+    plt.xlabel("Episodes (log scale)")
+    plt.ylabel("Ordinary Importance Sampling")
+    plt.xscale("log")
 
-    plt.savefig(f'{path_to_images}/figure_5_4.png')
+    plt.savefig(f"{path_to_images}/figure_5_4.png")
     plt.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     figure_5_4()

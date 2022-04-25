@@ -13,14 +13,11 @@ from matplotlib.table import Table
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 WORLD_SIZE = 4
 # left, up, right, down
-ACTIONS = [np.array([0, -1]),
-           np.array([-1, 0]),
-           np.array([0, 1]),
-           np.array([1, 0])]
+ACTIONS = [np.array([0, -1]), np.array([-1, 0]), np.array([0, 1]), np.array([1, 0])]
 ACTION_PROB = 0.25
 
 
@@ -53,15 +50,30 @@ def draw_image(image):
 
     # Add cells
     for (i, j), val in np.ndenumerate(image):
-        tb.add_cell(i, j, width, height, text=val,
-                    loc='center', facecolor='white')
+        tb.add_cell(i, j, width, height, text=val, loc="center", facecolor="white")
 
         # Row and column labels...
     for i in range(len(image)):
-        tb.add_cell(i, -1, width, height, text=i+1, loc='right',
-                    edgecolor='none', facecolor='none')
-        tb.add_cell(-1, i, width, height/2, text=i+1, loc='center',
-                    edgecolor='none', facecolor='none')
+        tb.add_cell(
+            i,
+            -1,
+            width,
+            height,
+            text=i + 1,
+            loc="right",
+            edgecolor="none",
+            facecolor="none",
+        )
+        tb.add_cell(
+            -1,
+            i,
+            width,
+            height / 2,
+            text=i + 1,
+            loc="center",
+            edgecolor="none",
+            facecolor="none",
+        )
     ax.add_table(tb)
 
 
@@ -80,7 +92,9 @@ def compute_state_value(in_place=True, discount=1.0):
                 value = 0
                 for action in ACTIONS:
                     (next_i, next_j), reward = step([i, j], action)
-                    value += ACTION_PROB * (reward + discount * state_values[next_i, next_j])
+                    value += ACTION_PROB * (
+                        reward + discount * state_values[next_i, next_j]
+                    )
                 new_state_values[i, j] = value
 
         max_delta_value = abs(old_state_values - new_state_values).max()
@@ -98,12 +112,12 @@ def figure_4_1():
     _, asycn_iteration = compute_state_value(in_place=True)
     values, sync_iteration = compute_state_value(in_place=False)
     draw_image(np.round(values, decimals=2))
-    print('In-place: {} iterations'.format(asycn_iteration))
-    print('Synchronous: {} iterations'.format(sync_iteration))
+    print("In-place: {} iterations".format(asycn_iteration))
+    print("Synchronous: {} iterations".format(sync_iteration))
 
-    plt.savefig(f'{path_to_images}/figure_4_1.png')
+    plt.savefig(f"{path_to_images}/figure_4_1.png")
     plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     figure_4_1()

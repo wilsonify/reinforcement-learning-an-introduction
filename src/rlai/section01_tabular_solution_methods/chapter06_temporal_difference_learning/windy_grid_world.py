@@ -11,7 +11,7 @@ import matplotlib
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 # world height
@@ -42,6 +42,7 @@ START = [3, 0]
 GOAL = [3, 7]
 ACTIONS = [ACTION_UP, ACTION_DOWN, ACTION_LEFT, ACTION_RIGHT]
 
+
 def step(state, action):
     i, j = state
     if action == ACTION_UP:
@@ -54,6 +55,7 @@ def step(state, action):
         return [max(i - WIND[j], 0), min(j + 1, WORLD_WIDTH - 1)]
     else:
         assert False
+
 
 # play for an episode
 def episode(q_value):
@@ -68,7 +70,13 @@ def episode(q_value):
         action = np.random.choice(ACTIONS)
     else:
         values_ = q_value[state[0], state[1], :]
-        action = np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
+        action = np.random.choice(
+            [
+                action_
+                for action_, value_ in enumerate(values_)
+                if value_ == np.max(values_)
+            ]
+        )
 
     # keep going until get to the goal state
     while state != GOAL:
@@ -77,16 +85,25 @@ def episode(q_value):
             next_action = np.random.choice(ACTIONS)
         else:
             values_ = q_value[next_state[0], next_state[1], :]
-            next_action = np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
+            next_action = np.random.choice(
+                [
+                    action_
+                    for action_, value_ in enumerate(values_)
+                    if value_ == np.max(values_)
+                ]
+            )
 
         # Sarsa update
-        q_value[state[0], state[1], action] += \
-            ALPHA * (REWARD + q_value[next_state[0], next_state[1], next_action] -
-                     q_value[state[0], state[1], action])
+        q_value[state[0], state[1], action] += ALPHA * (
+            REWARD
+            + q_value[next_state[0], next_state[1], next_action]
+            - q_value[state[0], state[1], action]
+        )
         state = next_state
         action = next_action
         time += 1
     return time
+
 
 def figure_6_3():
     q_value = np.zeros((WORLD_HEIGHT, WORLD_WIDTH, 4))
@@ -103,10 +120,10 @@ def figure_6_3():
     steps = np.add.accumulate(steps)
 
     plt.plot(steps, np.arange(1, len(steps) + 1))
-    plt.xlabel('Time steps')
-    plt.ylabel('Episodes')
+    plt.xlabel("Time steps")
+    plt.ylabel("Episodes")
 
-    plt.savefig(f'{path_to_images}/figure_6_3.png')
+    plt.savefig(f"{path_to_images}/figure_6_3.png")
     plt.close()
 
     # display the optimal policy
@@ -115,22 +132,22 @@ def figure_6_3():
         optimal_policy.append([])
         for j in range(0, WORLD_WIDTH):
             if [i, j] == GOAL:
-                optimal_policy[-1].append('G')
+                optimal_policy[-1].append("G")
                 continue
             bestAction = np.argmax(q_value[i, j, :])
             if bestAction == ACTION_UP:
-                optimal_policy[-1].append('U')
+                optimal_policy[-1].append("U")
             elif bestAction == ACTION_DOWN:
-                optimal_policy[-1].append('D')
+                optimal_policy[-1].append("D")
             elif bestAction == ACTION_LEFT:
-                optimal_policy[-1].append('L')
+                optimal_policy[-1].append("L")
             elif bestAction == ACTION_RIGHT:
-                optimal_policy[-1].append('R')
-    print('Optimal policy is:')
+                optimal_policy[-1].append("R")
+    print("Optimal policy is:")
     for row in optimal_policy:
         print(row)
-    print('Wind strength for each column:\n{}'.format([str(w) for w in WIND]))
+    print("Wind strength for each column:\n{}".format([str(w) for w in WIND]))
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     figure_6_3()
-

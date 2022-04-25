@@ -11,7 +11,7 @@ import numpy as np
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -54,7 +54,7 @@ def temporal_difference(value, n, alpha):
     time = 0
 
     # the length of this episode
-    T = float('inf')
+    T = float("inf")
     while True:
         # go to next time step
         time += 1
@@ -121,20 +121,22 @@ def figure7_2(runs=100, episodes=10):
                 for ep in range(0, episodes):
                     temporal_difference(value, step, alpha)
                     # calculate the RMS error
-                    errors[step_ind, alpha_ind] += np.sqrt(np.sum(np.power(value - TRUE_VALUE, 2)) / N_STATES)
+                    errors[step_ind, alpha_ind] += np.sqrt(
+                        np.sum(np.power(value - TRUE_VALUE, 2)) / N_STATES
+                    )
     # take average
     errors /= episodes * runs
 
     for i in range(0, len(steps)):
-        plt.plot(alphas, errors[i, :], label='n = %d' % (steps[i]))
-    plt.xlabel('alpha')
-    plt.ylabel('RMS error')
+        plt.plot(alphas, errors[i, :], label="n = %d" % (steps[i]))
+    plt.xlabel("alpha")
+    plt.ylabel("RMS error")
     plt.ylim([0.25, 0.55])
     plt.legend()
 
-    plt.savefig(f'{path_to_images}/figure_7_2.png')
+    plt.savefig(f"{path_to_images}/figure_7_2.png")
     plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     figure7_2()

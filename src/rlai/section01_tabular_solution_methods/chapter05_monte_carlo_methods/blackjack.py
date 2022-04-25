@@ -12,7 +12,7 @@ import numpy as np
 
 from rlai import path_to_images
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from tqdm import tqdm
@@ -97,7 +97,7 @@ def play(policy_player, initial_state=None, initial_action=None):
                 # last card must be ace
                 player_sum -= 10
             else:
-                usable_ace_player |= (1 == card)
+                usable_ace_player |= 1 == card
 
         # initialize cards of dealer, suppose dealer will show the first card he gets
         dealer_card1 = get_card()
@@ -134,7 +134,9 @@ def play(policy_player, initial_state=None, initial_action=None):
             action = policy_player(usable_ace_player, player_sum, dealer_card1)
 
         # track player's trajectory for importance sampling
-        player_trajectory.append([(usable_ace_player, player_sum, dealer_card1), action])
+        player_trajectory.append(
+            [(usable_ace_player, player_sum, dealer_card1), action]
+        )
 
         if action == ACTION_STAND:
             break
@@ -154,7 +156,7 @@ def play(policy_player, initial_state=None, initial_action=None):
         if player_sum > 21:
             return state, -1, player_trajectory
         assert player_sum <= 21
-        usable_ace_player = (ace_count == 1)
+        usable_ace_player = ace_count == 1
 
     # dealer's turn
     while True:
@@ -175,7 +177,7 @@ def play(policy_player, initial_state=None, initial_action=None):
         # dealer busts
         if dealer_sum > 21:
             return state, 1, player_trajectory
-        usable_ace_dealer = (ace_count == 1)
+        usable_ace_dealer = ace_count == 1
 
     # compare the sum between player and dealer
     assert player_sum <= 21 and dealer_sum <= 21
@@ -206,7 +208,10 @@ def monte_carlo_on_policy(episodes):
             else:
                 states_no_usable_ace_count[player_sum, dealer_card] += 1
                 states_no_usable_ace[player_sum, dealer_card] += reward
-    return states_usable_ace / states_usable_ace_count, states_no_usable_ace / states_no_usable_ace_count
+    return (
+        states_usable_ace / states_usable_ace_count,
+        states_no_usable_ace / states_no_usable_ace_count,
+    )
 
 
 # Monte Carlo with Exploring Starts
@@ -222,16 +227,26 @@ def monte_carlo_es(episodes):
         player_sum -= 12
         dealer_card -= 1
         # get argmax of the average returns(s, a)
-        values_ = state_action_values[player_sum, dealer_card, usable_ace, :] / \
-                  state_action_pair_count[player_sum, dealer_card, usable_ace, :]
-        return np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
+        values_ = (
+            state_action_values[player_sum, dealer_card, usable_ace, :]
+            / state_action_pair_count[player_sum, dealer_card, usable_ace, :]
+        )
+        return np.random.choice(
+            [
+                action_
+                for action_, value_ in enumerate(values_)
+                if value_ == np.max(values_)
+            ]
+        )
 
     # play for several episodes
     for episode in tqdm(range(episodes)):
         # for each episode, use a randomly initialized state and action
-        initial_state = [bool(np.random.choice([0, 1])),
-                         np.random.choice(range(12, 22)),
-                         np.random.choice(range(1, 11))]
+        initial_state = [
+            bool(np.random.choice([0, 1])),
+            np.random.choice(range(12, 22)),
+            np.random.choice(range(1, 11)),
+        ]
         initial_action = np.random.choice(ACTIONS)
         current_policy = behavior_policy if episode else target_policy_player
         _, reward, trajectory = play(current_policy, initial_state, initial_action)
@@ -259,7 +274,9 @@ def monte_carlo_off_policy(episodes):
     returns = []
 
     for i in range(0, episodes):
-        _, reward, player_trajectory = play(behavior_policy_player, initial_state=initial_state)
+        _, reward, player_trajectory = play(
+            behavior_policy_player, initial_state=initial_state
+        )
 
         # get the importance ratio
         numerator = 1.0
@@ -283,7 +300,7 @@ def monte_carlo_off_policy(episodes):
 
     ordinary_sampling = weighted_returns / np.arange(1, episodes + 1)
 
-    with np.errstate(divide='ignore', invalid='ignore'):
+    with np.errstate(divide="ignore", invalid="ignore"):
         weighted_sampling = np.where(rhos != 0, weighted_returns / rhos, 0)
 
     return ordinary_sampling, weighted_sampling
@@ -293,28 +310,37 @@ def figure_5_1(episodes1=10000, episodes2=500000):
     states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(episodes1)
     states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(episodes2)
 
-    states = [states_usable_ace_1,
-              states_usable_ace_2,
-              states_no_usable_ace_1,
-              states_no_usable_ace_2]
+    states = [
+        states_usable_ace_1,
+        states_usable_ace_2,
+        states_no_usable_ace_1,
+        states_no_usable_ace_2,
+    ]
 
-    titles = ['Usable Ace, 10000 Episodes',
-              'Usable Ace, 500000 Episodes',
-              'No Usable Ace, 10000 Episodes',
-              'No Usable Ace, 500000 Episodes']
+    titles = [
+        "Usable Ace, 10000 Episodes",
+        "Usable Ace, 500000 Episodes",
+        "No Usable Ace, 10000 Episodes",
+        "No Usable Ace, 500000 Episodes",
+    ]
 
     _, axes = plt.subplots(2, 2, figsize=(40, 30))
     plt.subplots_adjust(wspace=0.1, hspace=0.2)
     axes = axes.flatten()
 
     for state, title, axis in zip(states, titles, axes):
-        fig = sns.heatmap(np.flipud(state), cmap="YlGnBu", ax=axis, xticklabels=range(1, 11),
-                          yticklabels=list(reversed(range(12, 22))))
-        fig.set_ylabel('player sum', fontsize=30)
-        fig.set_xlabel('dealer showing', fontsize=30)
+        fig = sns.heatmap(
+            np.flipud(state),
+            cmap="YlGnBu",
+            ax=axis,
+            xticklabels=range(1, 11),
+            yticklabels=list(reversed(range(12, 22))),
+        )
+        fig.set_ylabel("player sum", fontsize=30)
+        fig.set_xlabel("dealer showing", fontsize=30)
         fig.set_title(title, fontsize=30)
 
-    plt.savefig(f'{path_to_images}/figure_5_1.png')
+    plt.savefig(f"{path_to_images}/figure_5_1.png")
     plt.close()
 
 
@@ -328,34 +354,42 @@ def figure_5_2(episodes=500000):
     action_no_usable_ace = np.argmax(state_action_values[:, :, 0, :], axis=-1)
     action_usable_ace = np.argmax(state_action_values[:, :, 1, :], axis=-1)
 
-    images = [action_usable_ace,
-              state_value_usable_ace,
-              action_no_usable_ace,
-              state_value_no_usable_ace]
+    images = [
+        action_usable_ace,
+        state_value_usable_ace,
+        action_no_usable_ace,
+        state_value_no_usable_ace,
+    ]
 
-    titles = ['Optimal policy with usable Ace',
-              'Optimal value with usable Ace',
-              'Optimal policy without usable Ace',
-              'Optimal value without usable Ace']
+    titles = [
+        "Optimal policy with usable Ace",
+        "Optimal value with usable Ace",
+        "Optimal policy without usable Ace",
+        "Optimal value without usable Ace",
+    ]
 
     _, axes = plt.subplots(2, 2, figsize=(40, 30))
     plt.subplots_adjust(wspace=0.1, hspace=0.2)
     axes = axes.flatten()
 
     for image, title, axis in zip(images, titles, axes):
-        fig = sns.heatmap(np.flipud(image), cmap="YlGnBu", ax=axis, xticklabels=range(1, 11),
-                          yticklabels=list(reversed(range(12, 22))))
-        fig.set_ylabel('player sum', fontsize=30)
-        fig.set_xlabel('dealer showing', fontsize=30)
+        fig = sns.heatmap(
+            np.flipud(image),
+            cmap="YlGnBu",
+            ax=axis,
+            xticklabels=range(1, 11),
+            yticklabels=list(reversed(range(12, 22))),
+        )
+        fig.set_ylabel("player sum", fontsize=30)
+        fig.set_xlabel("dealer showing", fontsize=30)
         fig.set_title(title, fontsize=30)
 
-    plt.savefig(f'{path_to_images}/figure_5_2.png')
+    plt.savefig(f"{path_to_images}/figure_5_2.png")
     plt.close()
 
 
-def figure_5_3(episodes = 10000, runs = 100):
+def figure_5_3(episodes=10000, runs=100):
     true_value = -0.27726
-
 
     error_ordinary = np.zeros(episodes)
     error_weighted = np.zeros(episodes)
@@ -367,19 +401,29 @@ def figure_5_3(episodes = 10000, runs = 100):
     error_ordinary /= runs
     error_weighted /= runs
 
-    plt.plot(np.arange(1, episodes + 1), error_ordinary, color='green', label='Ordinary Importance Sampling')
-    plt.plot(np.arange(1, episodes + 1), error_weighted, color='red', label='Weighted Importance Sampling')
+    plt.plot(
+        np.arange(1, episodes + 1),
+        error_ordinary,
+        color="green",
+        label="Ordinary Importance Sampling",
+    )
+    plt.plot(
+        np.arange(1, episodes + 1),
+        error_weighted,
+        color="red",
+        label="Weighted Importance Sampling",
+    )
     plt.ylim(-0.1, 5)
-    plt.xlabel('Episodes (log scale)')
-    plt.ylabel(f'Mean square error\n(average over {runs} runs)')
-    plt.xscale('log')
+    plt.xlabel("Episodes (log scale)")
+    plt.ylabel(f"Mean square error\n(average over {runs} runs)")
+    plt.xscale("log")
     plt.legend()
 
-    plt.savefig(f'{path_to_images}/figure_5_3.png')
+    plt.savefig(f"{path_to_images}/figure_5_3.png")
     plt.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     figure_5_1()
     figure_5_2()
     figure_5_3()
