@@ -11,14 +11,14 @@
 # implements an asynchronous policy evaluation. This file also utilizes multi-processing for acceleration and contains
 # an answer to Exercise 4.5
 
-import numpy as np
-import matplotlib.pyplot as plt
-import math
-import tqdm
-import multiprocessing as mp
-from functools import partial
-import time
 import itertools
+import math
+import multiprocessing as mp
+import time
+from functools import partial
+
+import matplotlib.pyplot as plt
+import numpy as np
 
 ############# PROBLEM SPECIFIC CONSTANTS #######################
 MAX_CARS = 20

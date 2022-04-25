@@ -8,6 +8,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -286,7 +289,7 @@ def figure_9_1(true_value):
     plt.ylabel('Distribution')
     plt.legend()
 
-    plt.savefig('../images/figure_9_1.png')
+    plt.savefig(f'{path_to_images}/figure_9_1.png')
     plt.close()
 
 # semi-gradient TD on 1000-state random walk
@@ -347,7 +350,7 @@ def figure_9_2(true_value):
     plt.subplot(2, 1, 2)
     figure_9_2_right(true_value)
 
-    plt.savefig('../images/figure_9_2.png')
+    plt.savefig(f'{path_to_images}/figure_9_2.png')
     plt.close()
 
 # Figure 9.5, Fourier basis and polynomials
@@ -391,7 +394,7 @@ def figure_9_5(true_value):
     plt.ylabel('RMSE')
     plt.legend()
 
-    plt.savefig('../images/figure_9_5.png')
+    plt.savefig(f'{path_to_images}/figure_9_5.png')
     plt.close()
 
 # Figure 9.10, it will take quite a while
@@ -447,7 +450,7 @@ def figure_9_10(true_value):
     plt.ylabel('RMSE')
     plt.legend()
 
-    plt.savefig('../images/figure_9_10.png')
+    plt.savefig(f'{path_to_images}/figure_9_10.png')
     plt.close()
 
 if __name__ == '__main__':

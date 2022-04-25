@@ -8,6 +8,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -103,7 +106,7 @@ def figure_6_3():
     plt.xlabel('Time steps')
     plt.ylabel('Episodes')
 
-    plt.savefig('../images/figure_6_3.png')
+    plt.savefig(f'{path_to_images}/figure_6_3.png')
     plt.close()
 
     # display the optimal policy

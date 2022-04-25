@@ -6,8 +6,11 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -38,6 +41,7 @@ ACTIONS = [ACTION_UP, ACTION_DOWN, ACTION_LEFT, ACTION_RIGHT]
 START = [3, 0]
 GOAL = [3, 11]
 
+
 def step(state, action):
     i, j = state
     if action == ACTION_UP:
@@ -53,11 +57,12 @@ def step(state, action):
 
     reward = -1
     if (action == ACTION_DOWN and i == 2 and 1 <= j <= 10) or (
-        action == ACTION_RIGHT and state == START):
+            action == ACTION_RIGHT and state == START):
         reward = -100
         next_state = START
 
     return next_state, reward
+
 
 # reward for each action in each state
 # actionRewards = np.zeros((WORLD_HEIGHT, WORLD_WIDTH, 4))
@@ -89,6 +94,7 @@ def choose_action(state, q_value):
         values_ = q_value[state[0], state[1], :]
         return np.random.choice([action_ for action_, value_ in enumerate(values_) if value_ == np.max(values_)])
 
+
 # an episode with Sarsa
 # @q_value: values for state action pair, will be updated
 # @expected: if True, will use expected Sarsa algorithm
@@ -111,7 +117,8 @@ def sarsa(q_value, expected=False, step_size=ALPHA):
             best_actions = np.argwhere(q_next == np.max(q_next))
             for action_ in ACTIONS:
                 if action_ in best_actions:
-                    target += ((1.0 - EPSILON) / len(best_actions) + EPSILON / len(ACTIONS)) * q_value[next_state[0], next_state[1], action_]
+                    target += ((1.0 - EPSILON) / len(best_actions) + EPSILON / len(ACTIONS)) * q_value[
+                        next_state[0], next_state[1], action_]
                 else:
                     target += EPSILON / len(ACTIONS) * q_value[next_state[0], next_state[1], action_]
         target *= GAMMA
@@ -120,6 +127,7 @@ def sarsa(q_value, expected=False, step_size=ALPHA):
         state = next_state
         action = next_action
     return rewards
+
 
 # an episode with Q-Learning
 # @q_value: values for state action pair, will be updated
@@ -138,6 +146,7 @@ def q_learning(q_value, step_size=ALPHA):
                 q_value[state[0], state[1], action])
         state = next_state
     return rewards
+
 
 # print optimal policy
 def print_optimal_policy(q_value):
@@ -160,16 +169,15 @@ def print_optimal_policy(q_value):
     for row in optimal_policy:
         print(row)
 
+
 # Use multiple runs instead of a single run and a sliding window
 # With a single run I failed to present a smooth curve
 # However the optimal policy converges well with a single run
 # Sarsa converges to the safe path, while Q-Learning converges to the optimal path
-def figure_6_4():
+def figure_6_4(episodes=500, runs=50):
     # episodes of each run
-    episodes = 500
 
     # perform 40 independent runs
-    runs = 50
 
     rewards_sarsa = np.zeros(episodes)
     rewards_q_learning = np.zeros(episodes)
@@ -195,7 +203,7 @@ def figure_6_4():
     plt.ylim([-100, 0])
     plt.legend()
 
-    plt.savefig('../images/figure_6_4.png')
+    plt.savefig(f'{path_to_images}/figure_6_4.png')
     plt.close()
 
     # display optimal policy
@@ -204,13 +212,12 @@ def figure_6_4():
     print('Q-Learning Optimal Policy:')
     print_optimal_policy(q_q_learning)
 
+
 # Due to limited capacity of calculation of my machine, I can't complete this experiment
 # with 100,000 episodes and 50,000 runs to get the fully averaged performance
 # However even I only play for 1,000 episodes and 10 runs, the curves looks still good.
-def figure_6_6():
+def figure_6_6(episodes=1000, runs=10):
     step_sizes = np.arange(0.1, 1.1, 0.1)
-    episodes = 1000
-    runs = 10
 
     ASY_SARSA = 0
     ASY_EXPECTED_SARSA = 1
@@ -250,8 +257,9 @@ def figure_6_6():
     plt.ylabel('reward per episode')
     plt.legend()
 
-    plt.savefig('../images/figure_6_6.png')
+    plt.savefig(f'{path_to_images}/figure_6_6.png')
     plt.close()
+
 
 if __name__ == '__main__':
     figure_6_4()

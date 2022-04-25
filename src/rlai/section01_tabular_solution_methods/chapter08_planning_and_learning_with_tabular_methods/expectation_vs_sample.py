@@ -7,6 +7,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -31,8 +34,8 @@ def b_steps(b):
 
     return errors
 
-def figure_8_7():
-    runs = 100
+def figure_8_7(runs = 100):
+
     branch = [2, 10, 100, 1000]
     for b in branch:
         errors = np.zeros((runs, 2 * b))
@@ -47,7 +50,7 @@ def figure_8_7():
     plt.ylabel('RMS error')
     plt.legend()
 
-    plt.savefig('../images/figure_8_7.png')
+    plt.savefig(f'{path_to_images}/figure_8_7.png')
     plt.close()
 
 if __name__ == '__main__':

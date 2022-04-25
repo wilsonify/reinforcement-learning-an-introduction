@@ -8,6 +8,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -176,11 +179,11 @@ def example_6_2():
     rms_error()
     plt.tight_layout()
 
-    plt.savefig('../images/example_6_2.png')
+    plt.savefig(f'{path_to_images}/example_6_2.png')
     plt.close()
 
-def figure_6_2():
-    episodes = 100 + 1
+def figure_6_2(episodes = 101):
+
     td_errors = batch_updating('TD', episodes)
     mc_errors = batch_updating('MC', episodes)
 
@@ -189,11 +192,11 @@ def figure_6_2():
     plt.title("Batch Training")
     plt.xlabel('Walks/Episodes')
     plt.ylabel('RMS error, averaged over states')
-    plt.xlim(0, 100)
+    plt.xlim(0, episodes-1)
     plt.ylim(0, 0.25)
     plt.legend()
 
-    plt.savefig('../images/figure_6_2.png')
+    plt.savefig(f'{path_to_images}/figure_6_2.png')
     plt.close()
 
 if __name__ == '__main__':

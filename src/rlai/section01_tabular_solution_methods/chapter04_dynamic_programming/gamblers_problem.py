@@ -10,6 +10,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 
 # goal
@@ -75,7 +77,7 @@ def figure_4_3():
     plt.xlabel('Capital')
     plt.ylabel('Final policy (stake)')
 
-    plt.savefig('../images/figure_4_3.png')
+    plt.savefig(f'{path_to_images}/figure_4_3.png')
     plt.close()
 
 

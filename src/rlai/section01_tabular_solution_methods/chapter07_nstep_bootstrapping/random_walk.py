@@ -6,8 +6,11 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -32,6 +35,7 @@ END_STATES = [0, N_STATES + 1]
 # true state value from bellman equation
 TRUE_VALUE = np.arange(-20, 22, 2) / 20.0
 TRUE_VALUE[0] = TRUE_VALUE[-1] = 0
+
 
 # n-steps TD method
 # @value: values for each state, will be updated
@@ -94,19 +98,18 @@ def temporal_difference(value, n, alpha):
             break
         state = next_state
 
+
 # Figure 7.2, it will take quite a while
-def figure7_2():
+def figure7_2(runs=100, episodes=10):
+    """
+    runs: # of independent runs to perform
+    episodes: # of episodes in each run
+    """
     # all possible steps
     steps = np.power(2, np.arange(0, 10))
 
     # all possible alphas
     alphas = np.arange(0, 1.1, 0.1)
-
-    # each run has 10 episodes
-    episodes = 10
-
-    # perform 100 independent runs
-    runs = 100
 
     # track the errors for each (step, alpha) combination
     errors = np.zeros((len(steps), len(alphas)))
@@ -129,10 +132,9 @@ def figure7_2():
     plt.ylim([0.25, 0.55])
     plt.legend()
 
-    plt.savefig('../images/figure_7_2.png')
+    plt.savefig(f'{path_to_images}/figure_7_2.png')
     plt.close()
+
 
 if __name__ == '__main__':
     figure7_2()
-
-

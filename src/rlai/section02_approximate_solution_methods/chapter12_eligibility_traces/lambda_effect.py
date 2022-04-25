@@ -34,15 +34,17 @@ Structure:
         5.2. Reproducing figure 12.14
         5.3. Main
 
-""";
-
+"""
 
 import math
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns;
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-import seaborn as sns; sns.set_theme()
+
+sns.set_theme()
 
 
 #############################################################################################
@@ -100,7 +102,7 @@ def hashcoords(coordinates, m, readonly=False):
     if type(m) == int: return basehash(tuple(coordinates)) % m
     if m == None: return coordinates
 
-from math import floor, log
+from math import floor
 from itertools import zip_longest
 
 def tiles(ihtORsize, numtilings, floats, ints=[], readonly=False):

@@ -7,8 +7,11 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -16,7 +19,7 @@ from tqdm import tqdm
 
 # actions: hit or stand
 ACTION_HIT = 0
-ACTION_STAND = 1  #  "strike" in the book
+ACTION_STAND = 1  # "strike" in the book
 ACTIONS = [ACTION_HIT, ACTION_STAND]
 
 # policy for player
@@ -26,15 +29,18 @@ for i in range(12, 20):
 POLICY_PLAYER[20] = ACTION_STAND
 POLICY_PLAYER[21] = ACTION_STAND
 
+
 # function form of target policy of player
 def target_policy_player(usable_ace_player, player_sum, dealer_card):
     return POLICY_PLAYER[player_sum]
+
 
 # function form of behavior policy of player
 def behavior_policy_player(usable_ace_player, player_sum, dealer_card):
     if np.random.binomial(1, 0.5) == 1:
         return ACTION_STAND
     return ACTION_HIT
+
 
 # policy for dealer
 POLICY_DEALER = np.zeros(22)
@@ -43,15 +49,18 @@ for i in range(12, 17):
 for i in range(17, 22):
     POLICY_DEALER[i] = ACTION_STAND
 
+
 # get a new card
 def get_card():
     card = np.random.randint(1, 14)
     card = min(card, 10)
     return card
 
+
 # get the value of a card (11 for ace).
 def card_value(card_id):
     return 11 if card_id == 1 else card_id
+
 
 # play a game
 # @policy_player: specify policy for player
@@ -177,6 +186,7 @@ def play(policy_player, initial_state=None, initial_action=None):
     else:
         return state, -1, player_trajectory
 
+
 # Monte Carlo Sample with On-Policy
 def monte_carlo_on_policy(episodes):
     states_usable_ace = np.zeros((10, 10))
@@ -197,6 +207,7 @@ def monte_carlo_on_policy(episodes):
                 states_no_usable_ace_count[player_sum, dealer_card] += 1
                 states_no_usable_ace[player_sum, dealer_card] += reward
     return states_usable_ace / states_usable_ace_count, states_no_usable_ace / states_no_usable_ace_count
+
 
 # Monte Carlo with Exploring Starts
 def monte_carlo_es(episodes):
@@ -219,8 +230,8 @@ def monte_carlo_es(episodes):
     for episode in tqdm(range(episodes)):
         # for each episode, use a randomly initialized state and action
         initial_state = [bool(np.random.choice([0, 1])),
-                       np.random.choice(range(12, 22)),
-                       np.random.choice(range(1, 11))]
+                         np.random.choice(range(12, 22)),
+                         np.random.choice(range(1, 11))]
         initial_action = np.random.choice(ACTIONS)
         current_policy = behavior_policy if episode else target_policy_player
         _, reward, trajectory = play(current_policy, initial_state, initial_action)
@@ -238,6 +249,7 @@ def monte_carlo_es(episodes):
             state_action_pair_count[player_sum, dealer_card, usable_ace, action] += 1
 
     return state_action_values / state_action_pair_count
+
 
 # Monte Carlo Sample with Off-Policy
 def monte_carlo_off_policy(episodes):
@@ -271,14 +283,15 @@ def monte_carlo_off_policy(episodes):
 
     ordinary_sampling = weighted_returns / np.arange(1, episodes + 1)
 
-    with np.errstate(divide='ignore',invalid='ignore'):
+    with np.errstate(divide='ignore', invalid='ignore'):
         weighted_sampling = np.where(rhos != 0, weighted_returns / rhos, 0)
 
     return ordinary_sampling, weighted_sampling
 
-def figure_5_1():
-    states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(10000)
-    states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(500000)
+
+def figure_5_1(episodes1=10000, episodes2=500000):
+    states_usable_ace_1, states_no_usable_ace_1 = monte_carlo_on_policy(episodes1)
+    states_usable_ace_2, states_no_usable_ace_2 = monte_carlo_on_policy(episodes2)
 
     states = [states_usable_ace_1,
               states_usable_ace_2,
@@ -301,11 +314,12 @@ def figure_5_1():
         fig.set_xlabel('dealer showing', fontsize=30)
         fig.set_title(title, fontsize=30)
 
-    plt.savefig('../images/figure_5_1.png')
+    plt.savefig(f'{path_to_images}/figure_5_1.png')
     plt.close()
 
-def figure_5_2():
-    state_action_values = monte_carlo_es(500000)
+
+def figure_5_2(episodes=500000):
+    state_action_values = monte_carlo_es(episodes)
 
     state_value_no_usable_ace = np.max(state_action_values[:, :, 0, :], axis=-1)
     state_value_usable_ace = np.max(state_action_values[:, :, 1, :], axis=-1)
@@ -335,13 +349,14 @@ def figure_5_2():
         fig.set_xlabel('dealer showing', fontsize=30)
         fig.set_title(title, fontsize=30)
 
-    plt.savefig('../images/figure_5_2.png')
+    plt.savefig(f'{path_to_images}/figure_5_2.png')
     plt.close()
 
-def figure_5_3():
+
+def figure_5_3(episodes = 10000, runs = 100):
     true_value = -0.27726
-    episodes = 10000
-    runs = 100
+
+
     error_ordinary = np.zeros(episodes)
     error_weighted = np.zeros(episodes)
     for i in tqdm(range(0, runs)):
@@ -360,7 +375,7 @@ def figure_5_3():
     plt.xscale('log')
     plt.legend()
 
-    plt.savefig('../images/figure_5_3.png')
+    plt.savefig(f'{path_to_images}/figure_5_3.png')
     plt.close()
 
 

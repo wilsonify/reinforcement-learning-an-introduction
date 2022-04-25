@@ -6,13 +6,17 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import heapq
 from copy import deepcopy
+
 
 class PriorityQueue:
     def __init__(self):
@@ -43,6 +47,7 @@ class PriorityQueue:
 
     def empty(self):
         return not self.entry_finder
+
 
 # A wrapper class for a maze, containing all the information about the maze.
 # Basically it's initialized to DynaMaze by default, however it can be easily adapted
@@ -135,6 +140,7 @@ class Maze:
             reward = 0.0
         return [x, y], reward
 
+
 # a wrapper class for parameters of dyna algorithms
 class DynaParams:
     def __init__(self):
@@ -171,6 +177,7 @@ def choose_action(state, q_value, maze, dyna_params):
         values = q_value[state[0], state[1], :]
         return np.random.choice([action for action, value in enumerate(values) if value == np.max(values)])
 
+
 # Trivial model for planning in Dyna-Q
 class TrivialModel:
     # @rand: an instance of np.random.RandomState for sampling
@@ -196,6 +203,7 @@ class TrivialModel:
         state = deepcopy(state)
         next_state = deepcopy(next_state)
         return list(state), action, list(next_state), reward
+
 
 # Time-based model for planning in Dyna-Q+
 class TimeModel:
@@ -244,6 +252,7 @@ class TimeModel:
         next_state = deepcopy(next_state)
 
         return list(state), action, list(next_state), reward
+
 
 # Model containing a priority queue for Prioritized Sweeping
 class PriorityModel(TrivialModel):
@@ -331,6 +340,7 @@ def dyna_q(q_value, model, maze, dyna_params):
 
     return steps
 
+
 # play for an episode for prioritized sweeping algorithm
 # @q_value: state action pair values, will be updated
 # @model: model instance for planning
@@ -394,14 +404,13 @@ def prioritized_sweeping(q_value, model, maze, dyna_params):
 
     return backups
 
+
 # Figure 8.2, DynaMaze, use 10 runs instead of 30 runs
-def figure_8_2():
+def figure_8_2(runs=10, episodes=50):
     # set up an instance for DynaMaze
     dyna_maze = Maze()
     dyna_params = DynaParams()
 
-    runs = 10
-    episodes = 50
     planning_steps = [0, 5, 50]
     steps = np.zeros((len(planning_steps), episodes))
 
@@ -425,14 +434,14 @@ def figure_8_2():
     plt.ylabel('steps per episode')
     plt.legend()
 
-    plt.savefig('../images/figure_8_2.png')
+    plt.savefig(f'{path_to_images}/figure_8_2.png')
     plt.close()
+
 
 # wrapper function for changing maze
 # @maze: a maze instance
 # @dynaParams: several parameters for dyna algorithms
 def changing_maze(maze, dyna_params):
-
     # set up max steps
     max_steps = maze.max_steps
 
@@ -472,8 +481,9 @@ def changing_maze(maze, dyna_params):
 
     return rewards
 
+
 # Figure 8.4, BlockingMaze
-def figure_8_4():
+def figure_8_4(max_steps=3000):
     # set up a blocking maze instance
     blocking_maze = Maze()
     blocking_maze.START_STATE = [5, 3]
@@ -484,7 +494,7 @@ def figure_8_4():
     blocking_maze.new_obstacles = [[3, i] for i in range(1, 9)]
 
     # step limit
-    blocking_maze.max_steps = 3000
+    blocking_maze.max_steps = max_steps
 
     # obstacles will change after 1000 steps
     # the exact step for changing will be different
@@ -510,11 +520,12 @@ def figure_8_4():
     plt.ylabel('cumulative reward')
     plt.legend()
 
-    plt.savefig('../images/figure_8_4.png')
+    plt.savefig(f'{path_to_images}/figure_8_4.png')
     plt.close()
 
+
 # Figure 8.5, ShortcutMaze
-def figure_8_5():
+def figure_8_5(max_steps=6000):
     # set up a shortcut maze instance
     shortcut_maze = Maze()
     shortcut_maze.START_STATE = [5, 3]
@@ -525,7 +536,7 @@ def figure_8_5():
     shortcut_maze.new_obstacles = [[3, i] for i in range(1, 8)]
 
     # step limit
-    shortcut_maze.max_steps = 6000
+    shortcut_maze.max_steps = max_steps
 
     # obstacles will change after 3000 steps
     # the exact step for changing will be different
@@ -546,13 +557,14 @@ def figure_8_5():
     rewards = changing_maze(shortcut_maze, dyna_params)
 
     for i in range(len(dyna_params.methods)):
-        plt.plot( rewards[i, :], label=dyna_params.methods[i])
+        plt.plot(rewards[i, :], label=dyna_params.methods[i])
     plt.xlabel('time steps')
     plt.ylabel('cumulative reward')
     plt.legend()
 
-    plt.savefig('../images/figure_8_5.png')
+    plt.savefig(f'{path_to_images}/figure_8_5.png')
     plt.close()
+
 
 # Check whether state-action values are already optimal
 def check_path(q_values, maze):
@@ -570,8 +582,9 @@ def check_path(q_values, maze):
             return False
     return True
 
+
 # Example 8.4, mazes with different resolution
-def example_8_4():
+def example_8_4(runs=5, num_of_mazes=5):
     # get the original 6 * 9 maze
     original_maze = Maze()
 
@@ -595,14 +608,12 @@ def example_8_4():
 
     # due to limitation of my machine, I can only perform experiments for 5 mazes
     # assuming the 1st maze has w * h states, then k-th maze has w * h * k * k states
-    num_of_mazes = 5
 
     # build all the mazes
     mazes = [original_maze.extend_maze(i) for i in range(1, num_of_mazes + 1)]
     methods = [prioritized_sweeping, dyna_q]
 
     # My machine cannot afford too many runs...
-    runs = 5
 
     # track the # of backups
     backups = np.zeros((runs, 2, num_of_mazes))
@@ -647,12 +658,12 @@ def example_8_4():
     plt.yscale('log')
     plt.legend()
 
-    plt.savefig('../images/example_8_4.png')
+    plt.savefig(f'{path_to_images}/example_8_4.png')
     plt.close()
+
 
 if __name__ == '__main__':
     figure_8_2()
     figure_8_4()
     figure_8_5()
     example_8_4()
-

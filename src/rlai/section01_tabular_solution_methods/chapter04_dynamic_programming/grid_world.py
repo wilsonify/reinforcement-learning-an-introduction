@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.table import Table
 
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 
 WORLD_SIZE = 4
@@ -99,7 +101,7 @@ def figure_4_1():
     print('In-place: {} iterations'.format(asycn_iteration))
     print('Synchronous: {} iterations'.format(sync_iteration))
 
-    plt.savefig('../images/figure_4_1.png')
+    plt.savefig(f'{path_to_images}/figure_4_1.png')
     plt.close()
 
 

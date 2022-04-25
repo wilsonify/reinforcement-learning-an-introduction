@@ -8,6 +8,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -100,10 +103,9 @@ def q_learning(q1, q2=None):
     return left_count
 
 # Figure 6.7, 1,000 runs may be enough, # of actions in state B will also affect the curves
-def figure_6_7():
+def figure_6_7(episodes = 300, runs = 1000):
     # each independent run has 300 episodes
-    episodes = 300
-    runs = 1000
+
     left_counts_q = np.zeros((runs, episodes))
     left_counts_double_q = np.zeros((runs, episodes))
     for run in tqdm(range(runs)):
@@ -123,7 +125,7 @@ def figure_6_7():
     plt.ylabel('% left actions from A')
     plt.legend()
 
-    plt.savefig('../images/figure_6_7.png')
+    plt.savefig(f'{path_to_images}/figure_6_7.png')
     plt.close()
 
 if __name__ == '__main__':

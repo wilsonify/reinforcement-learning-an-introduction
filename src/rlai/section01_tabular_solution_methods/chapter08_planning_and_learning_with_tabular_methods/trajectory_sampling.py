@@ -10,6 +10,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 
 # 2 actions
@@ -119,16 +121,18 @@ def on_policy(task, eval_interval):
     return zip(*performance)
 
 
-def figure_8_8():
-    num_states = [1000, 10000]
+def figure_8_8(num_states=(1000, 10000), n_tasks = 30,x_ticks = 100):
+
+
+
     branch = [1, 3, 10]
     methods = [on_policy, uniform]
 
     # average across 30 tasks
-    n_tasks = 30
+
 
     # number of evaluation points
-    x_ticks = 100
+
 
     plt.figure(figsize=(10, 20))
     for i, n in enumerate(num_states):
@@ -151,7 +155,7 @@ def figure_8_8():
     plt.subplot(2, 1, 2)
     plt.xlabel('computation time, in expected updates')
 
-    plt.savefig('../images/figure_8_8.png')
+    plt.savefig(f'{path_to_images}/figure_8_8.png')
     plt.close()
 
 

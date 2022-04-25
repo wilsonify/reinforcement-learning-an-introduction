@@ -13,6 +13,8 @@ import numpy as np
 import seaborn as sns
 from scipy.stats import poisson
 
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 
 # maximum # of cars in each location
@@ -175,7 +177,7 @@ def figure_4_2(constant_returned_cars=True):
 
         iterations += 1
 
-    plt.savefig('../images/figure_4_2.png')
+    plt.savefig(f'{path_to_images}/figure_4_2.png')
     plt.close()
 
 

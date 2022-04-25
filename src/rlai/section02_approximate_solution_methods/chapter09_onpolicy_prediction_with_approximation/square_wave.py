@@ -6,11 +6,14 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from tqdm import tqdm
+
 
 # wrapper class for an interval
 # readability is more important than efficiency, so I won't use many tricks
@@ -114,7 +117,7 @@ def figure_9_8():
             plt.plot(axis_x, values, label='feature width %.01f' % (value_function.feature_width))
         plt.legend()
 
-    plt.savefig('../images/figure_9_8.png')
+    plt.savefig(f'{path_to_images}/figure_9_8.png')
     plt.close()
 
 if __name__ == '__main__':

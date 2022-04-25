@@ -6,13 +6,18 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+from numpy.typing import ArrayLike
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-def true_value(p):
+
+def true_value(p: ArrayLike):
     """ True value of the first state
     Args:
         p (float): probability of the action 'right'.
@@ -23,10 +28,12 @@ def true_value(p):
     """
     return (2 * p - 4) / (p * (1 - p))
 
+
 class ShortCorridor:
     """
     Short corridor environment, see Example 13.1
     """
+
     def __init__(self):
         self.reset()
 
@@ -57,15 +64,18 @@ class ShortCorridor:
         else:
             return -1, False
 
+
 def softmax(x):
     t = np.exp(x - np.max(x))
     return t / np.sum(t)
+
 
 class ReinforceAgent:
     """
     ReinforceAgent that follows algorithm
     'REINFORNCE Monte-Carlo Policy-Gradient Control (episodic)'
     """
+
     def __init__(self, alpha, gamma):
         # set values such that initial conditions correspond to left-epsilon greedy
         self.theta = np.array([-1.47, 1.47])
@@ -129,6 +139,7 @@ class ReinforceAgent:
         self.rewards = []
         self.actions = []
 
+
 class ReinforceBaselineAgent(ReinforceAgent):
     def __init__(self, alpha, gamma, alpha_w):
         super(ReinforceBaselineAgent, self).__init__(alpha, gamma)
@@ -161,6 +172,7 @@ class ReinforceBaselineAgent(ReinforceAgent):
         self.rewards = []
         self.actions = []
 
+
 def trial(num_episodes, agent_generator):
     env = ShortCorridor()
     agent = agent_generator()
@@ -183,6 +195,7 @@ def trial(num_episodes, agent_generator):
         rewards[episode_idx] = rewards_sum
 
     return rewards
+
 
 def example_13_1():
     epsilon = 0.05
@@ -209,16 +222,17 @@ def example_13_1():
     ax.set_ylim(ymin=-105.0, ymax=5)
     ax.legend()
 
-    plt.savefig('../images/example_13_1.png')
+    plt.savefig(f'{path_to_images}/example_13_1.png')
     plt.close()
+
 
 def figure_13_1():
     num_trials = 100
     num_episodes = 1000
     gamma = 1
-    agent_generators = [lambda : ReinforceAgent(alpha=2e-4, gamma=gamma),
-                        lambda : ReinforceAgent(alpha=2e-5, gamma=gamma),
-                        lambda : ReinforceAgent(alpha=2e-3, gamma=gamma)]
+    agent_generators = [lambda: ReinforceAgent(alpha=2e-4, gamma=gamma),
+                        lambda: ReinforceAgent(alpha=2e-5, gamma=gamma),
+                        lambda: ReinforceAgent(alpha=2e-3, gamma=gamma)]
     labels = ['alpha = 2e-4',
               'alpha = 2e-5',
               'alpha = 2e-3']
@@ -237,16 +251,17 @@ def figure_13_1():
     plt.xlabel('episode')
     plt.legend(loc='lower right')
 
-    plt.savefig('../images/figure_13_1.png')
+    plt.savefig(f'{path_to_images}/figure_13_1.png')
     plt.close()
+
 
 def figure_13_2():
     num_trials = 100
     num_episodes = 1000
     alpha = 2e-4
     gamma = 1
-    agent_generators = [lambda : ReinforceAgent(alpha=alpha, gamma=gamma),
-                        lambda : ReinforceBaselineAgent(alpha=alpha*10, gamma=gamma, alpha_w=alpha*100)]
+    agent_generators = [lambda: ReinforceAgent(alpha=alpha, gamma=gamma),
+                        lambda: ReinforceBaselineAgent(alpha=alpha * 10, gamma=gamma, alpha_w=alpha * 100)]
     labels = ['Reinforce without baseline',
               'Reinforce with baseline']
 
@@ -264,8 +279,9 @@ def figure_13_2():
     plt.xlabel('episode')
     plt.legend(loc='lower right')
 
-    plt.savefig('../images/figure_13_2.png')
+    plt.savefig(f'{path_to_images}/figure_13_2.png')
     plt.close()
+
 
 if __name__ == '__main__':
     example_13_1()

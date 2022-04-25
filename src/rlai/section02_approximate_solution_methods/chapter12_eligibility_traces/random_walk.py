@@ -8,6 +8,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -216,7 +219,7 @@ def figure_12_3():
               np.arange(0, 0.11, 0.01)]
     parameter_sweep(OffLineLambdaReturn, 50, lambdas, alphas)
 
-    plt.savefig('../images/figure_12_3.png')
+    plt.savefig(f'{path_to_images}/figure_12_3.png')
     plt.close()
 
 # Figure 12.6: TD(lambda) algorithm
@@ -232,7 +235,7 @@ def figure_12_6():
               np.arange(0, 0.044, 0.004)]
     parameter_sweep(TemporalDifferenceLambda, 50, lambdas, alphas)
 
-    plt.savefig('../images/figure_12_6.png')
+    plt.savefig(f'{path_to_images}/figure_12_6.png')
     plt.close()
 
 # Figure 12.7: True online TD(lambda) algorithm
@@ -248,7 +251,7 @@ def figure_12_8():
               np.arange(0, 0.11, 0.01)]
     parameter_sweep(TrueOnlineTemporalDifferenceLambda, 50, lambdas, alphas)
 
-    plt.savefig('../images/figure_12_8.png')
+    plt.savefig(f'{path_to_images}/figure_12_8.png')
     plt.close()
 
 if __name__ == '__main__':

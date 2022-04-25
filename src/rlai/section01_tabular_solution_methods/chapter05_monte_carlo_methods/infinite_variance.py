@@ -8,6 +8,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
@@ -53,7 +56,7 @@ def figure_5_4():
     plt.ylabel('Ordinary Importance Sampling')
     plt.xscale('log')
 
-    plt.savefig('../images/figure_5_4.png')
+    plt.savefig(f'{path_to_images}/figure_5_4.png')
     plt.close()
 
 if __name__ == '__main__':

@@ -6,12 +6,14 @@
 # declaration at the top                                              #
 #######################################################################
 
-import numpy as np
 import matplotlib
+import numpy as np
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-from mpl_toolkits.mplot3d.axes3d import Axes3D
 from math import floor
 import seaborn as sns
 
@@ -234,7 +236,7 @@ def figure_10_5():
     fig.set_xlabel('Number of free servers')
     fig.set_ylabel('Priority')
 
-    plt.savefig('../images/figure_10_5.png')
+    plt.savefig(f'{path_to_images}/figure_10_5.png')
     plt.close()
 
 if __name__ == '__main__':

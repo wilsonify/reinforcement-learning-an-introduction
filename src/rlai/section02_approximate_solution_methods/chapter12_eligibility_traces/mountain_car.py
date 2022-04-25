@@ -7,6 +7,9 @@
 
 import numpy as np
 import matplotlib
+
+from rlai import path_to_images
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from math import floor
@@ -284,7 +287,7 @@ def figure_12_10():
     plt.ylim([180, 300])
     plt.legend()
 
-    plt.savefig('../images/figure_12_10.png')
+    plt.savefig(f'{path_to_images}/figure_12_10.png')
     plt.close()
 
 # figure 12.11, summary comparision of Sarsa(lambda) algorithms
@@ -321,7 +324,7 @@ def figure_12_11():
     plt.ylim([-550, -150])
     plt.legend()
 
-    plt.savefig('../images/figure_12_11.png')
+    plt.savefig(f'{path_to_images}/figure_12_11.png')
     plt.close()
 
 if __name__ == '__main__':
